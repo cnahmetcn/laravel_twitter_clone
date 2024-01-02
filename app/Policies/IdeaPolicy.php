@@ -24,5 +24,6 @@ class IdeaPolicy
     {
         // destroy
         return ($user->is_admin || $user->is($idea->user));
+        // $user->id === $idea->user_id;
     }
 }
