@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,11 +27,15 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
+        //Cache::forget('topUsers');
+        $topUsers = Cache::rememberForever('topUsers', function () {
+            return User::withCount('ideas')
+                    ->orderBy('ideas_count', 'DESC')
+                    ->take(5)->get();
+        });
+
         View::share(
-            'topUsers',
-            User::withCount('ideas')
-                ->orderBy('ideas_count', 'DESC')
-                ->take(5)->get()
+            'topUsers', $topUsers
         );
     }
 }
